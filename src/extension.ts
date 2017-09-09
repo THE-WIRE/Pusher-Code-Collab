@@ -2,6 +2,15 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as Pusher from 'pusher';
+
+var pusher = new Pusher({
+    appId: '397710',
+    key: 'c658646a189aa1dc804b',
+    secret: '9114afc13ec6eae60a8c',
+    cluster: 'ap2',
+    encrypted: true
+  });
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
