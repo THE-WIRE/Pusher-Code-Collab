@@ -11,7 +11,7 @@ export class Wire{
     pusher:any;
     channel:any;
     payload:any;
-    syncFlag:boolean = true;
+    syncFlag:boolean = true
 
     constructor(){
         // try{
@@ -39,25 +39,27 @@ export class Wire{
         console.log("Inside listener");
         vscode.workspace.onDidChangeTextDocument((e)=>{
 
-            if(this.syncFlag){
-                let range = e.contentChanges[0].range;
-                let text = e.contentChanges[0].text;
-    
-                if(text == ''){
-                    //deletion
-                    this.payload = {user: 'suyog', type: -1, range : range, text: text};
-                    console.log('deletion');
-                }
-                else{
-                    //insertion
-                    this.payload = {user: 'suyog', type: 1, range : range, text: text};
-                    console.log('insertion');
-                }
-    
-                //Forwarded to pusher
-                this.channel.trigger('client-event', this.payload);
-                // console.log(range, "|" + text + '|');
+            if(!this.syncFlag)
+                return;
+
+            let range = e.contentChanges[0].range;
+            let text = e.contentChanges[0].text;
+
+            if(text == ''){
+                //deletion
+                this.payload = {user: 'suyog', type: -1, range : range, text: text};
+                console.log('deletion');
             }
+            else{
+                //insertion
+                this.payload = {user: 'suyog', type: 1, range : range, text: text};
+                console.log('insertion');
+            }
+
+            //Forwarded to pusher
+            this.channel.trigger('client-event', this.payload);
+            // console.log(range, "|" + text + '|');
+            
             
         })
     }
@@ -70,9 +72,11 @@ export class Wire{
             if(data.user != 'suyog'){
                 console.log(data);
                 let _e = new Editor();
-                _e.insert(data.text, data.range);
+                if(data.type == 1)
+                    this.syncFlag = _e.insert(data.text, data.range);
+                else
+                    this.syncFlag = _e.delete(data.range);
             }
-            this.syncFlag = true;
         });
         
     }
