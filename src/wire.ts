@@ -40,7 +40,7 @@ export class Wire{
             let text = e.contentChanges[0].text;
 
             //Forwarded to pusher
-            this.channel.trigger('client-event', {user: 'suyog', range : e.contentChanges[0].range, text: e.contentChanges[0].text});
+            this.channel.trigger('client-event', {user: 'suyog', pos : e.contentChanges[0].range[0], text: e.contentChanges[0].text});
             console.log('triggered');
             
         })
@@ -50,10 +50,13 @@ export class Wire{
         console.log("Inside peer");
         // //From Pusher
         this.channel.bind('client-event', (data) => {
-            if(data.user != 'suyog')
-                console.log(data);
-                let _e = new Editor();
-                _e.insert(data.text, data.range);
+            console.log(data);
+            let _e = new Editor();
+            _e.insert(data.text, data.pos);
+
+            // if(data.user == 'xsuyog')
+            //     console.log(data);
+                
         });
         
     }
