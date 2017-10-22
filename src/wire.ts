@@ -13,8 +13,10 @@ export class Wire{
     payload:any;
     syncFlag:any = true
     token:any
+    username:any
 
     constructor(name:any, start:boolean = false, join:boolean = false, token:any = ""){
+        this.username = name;
         console.log("inside");
         if(start){
             console.log("inside start");
@@ -27,36 +29,28 @@ export class Wire{
         if(join){
             this.token = token;
         }
+         
+        this.pusher = new Pusher(pusher_config.key,{
+            authEndpoint: 'https://server-pusher.herokuapp.com/users/auth',
+            cluster: 'ap2',
+            encrypted: true
+        });
+    
+        this.channel = this.pusher.subscribe('private-wire-' + this.token);
 
-            
-        // try{
-            this.pusher = new Pusher(pusher_config.key,{
-                authEndpoint: 'https://server-pusher.herokuapp.com/users/auth',
-                cluster: 'ap2',
-                encrypted: true
-            });
-        
-            this.channel = this.pusher.subscribe('private-wire-' + this.token);
+        this.channel.bind("pusher:subscription_succeeded", (data) =>{
+            if(start)
+                vscode.window.showInformationMessage("Connected! Team Token is copied to your Clipboard : " + this.token)
+            else{
+                vscode.window.showInformationMessage("Connected! Start Collaborating...");
+                this.channel.trigger('client-status',  {username : name});
+            }
+        })
 
-            this.channel.bind("pusher:subscription_succeeded", (data) =>{
-                if(start)
-                    vscode.window.showInformationMessage("Connected! Team Token is copied to your Clipboard : " + this.token)
-                else{
-                    vscode.window.showInformationMessage("Connected! Start Collaborating...");
-                    this.channel.trigger('private-user-status-'+this.token,  {username : name});
-                }
-            })
-
-            this.channel.bind('private-user-status-'+this.token, (d) =>{
-                vscode.window.showInformationMessage(d.username + " connected!");
-            });
-
-        // }
-        // catch(e){
-        //     console.log(e);
-        // }
-        
-        
+        this.channel.bind('client-status', (d) =>{
+            vscode.window.showInformationMessage(d.username + " connected!");
+        });
+    
         
         
         this.listenDoc();
@@ -74,12 +68,12 @@ export class Wire{
 
                 if(text == ''){
                     //deletion
-                    this.payload = {user: 'suyog', type: -1, range : range, text: text};
+                    this.payload = {user: this.username, type: -1, range : range, text: text};
                     console.log('deletion');
                 }
                 else{
                     //insertion
-                    this.payload = {user: 'suyog', type: 1, range : range, text: text};
+                    this.payload = {user: this.username, type: 1, range : range, text: text};
                     console.log('insertion');
                 }
 
@@ -96,7 +90,7 @@ export class Wire{
         // //From Pusher
         this.channel.bind('client-event', (data) => {
             this.syncFlag = false;
-            if(data.user != 'suyog'){
+            if(data.user != this.username){
                 console.log(data);
                 let _e = new Editor();
                 if(data.type == 1){
