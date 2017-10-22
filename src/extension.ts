@@ -17,8 +17,11 @@ export function activate(context: vscode.ExtensionContext) {
 
         // let _e = new Editor();
         // _e.insert(content, range);
-        let _wire = new Wire();
-        vscode.window.showInformationMessage("some");
+        
+        vscode.window.showInputBox({ prompt: "Enter nickname" })
+        .then(value => {
+            let _wire = new Wire(value, true);    
+        })
 
 
         
@@ -26,8 +29,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     let joinDisposable = vscode.commands.registerCommand('extension.joinWire', () => {
         vscode.window.showInputBox({ prompt: "Enter Team Key" })
-        .then(value => {
-            vscode.window.showInformationMessage(value);
+        .then(key => {
+            vscode.window.showInputBox({ prompt: "Enter Nickname" })
+            .then(name => {
+                let _wire = new Wire(name, false, true, key);
+            })    
         })
     });
 

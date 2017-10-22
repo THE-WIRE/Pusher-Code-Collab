@@ -1,9 +1,9 @@
 // 'use strict'
 
 import * as vscode from 'vscode';
+let randomstring = require('randomstring');
+let copy = require('copy-paste');
 var Pusher = require('pusher-client');
-// import Pusher from 'pusher-js';
-// import { Pusher } from 'pusher-client';
 import { pusher_config } from './pusher.conf';
 import {Editor} from './editor';
 
@@ -12,8 +12,23 @@ export class Wire{
     channel:any;
     payload:any;
     syncFlag:any = true
+    token:any
 
-    constructor(){
+    constructor(name:any, start:boolean = false, join:boolean = false, token:any = ""){
+        console.log("inside");
+        if(start){
+            console.log("inside start");
+            this.token = randomstring.generate(6) + name + randomstring.generate(6);
+            this.token = this.token.toLowerCase();
+            console.log(this.token);
+            copy.copy(this.token);
+        }
+
+        if(join){
+            this.token = token;
+        }
+
+            
         // try{
             this.pusher = new Pusher(pusher_config.key,{
                 authEndpoint: 'https://server-pusher.herokuapp.com/users/auth',
@@ -21,7 +36,20 @@ export class Wire{
                 encrypted: true
             });
         
-            this.channel = this.pusher.subscribe('private-wire');
+            this.channel = this.pusher.subscribe('private-wire-' + this.token);
+
+            this.channel.bind("pusher:subscription_succeeded", (data) =>{
+                if(start)
+                    vscode.window.showInformationMessage("Connected! Team Token is copied to your Clipboard : " + this.token)
+                else{
+                    vscode.window.showInformationMessage("Connected! Start Collaborating...");
+                    this.channel.trigger('private-user-status-'+this.token,  {username : name});
+                }
+            })
+
+            this.channel.bind('private-user-status-'+this.token, (d) =>{
+                vscode.window.showInformationMessage(d.username + " connected!");
+            });
 
         // }
         // catch(e){
@@ -39,7 +67,7 @@ export class Wire{
         console.log("Inside listener");
         vscode.workspace.onDidChangeTextDocument((e)=>{
 
-            if(this.syncFlag == true)
+            if (this.syncFlag == true && e.contentChanges.length > 0) 
             {
                 let range = e.contentChanges[0].range;
                 let text = e.contentChanges[0].text;
