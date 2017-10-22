@@ -17,12 +17,12 @@ export class Wire{
 
     constructor(name:any, start:boolean = false, join:boolean = false, token:any = ""){
         this.username = name;
-        console.log("inside");
+        
         if(start){
-            console.log("inside start");
+            
             this.token = randomstring.generate(6) + name + randomstring.generate(6);
             this.token = this.token.toLowerCase();
-            console.log(this.token);
+           
             copy.copy(this.token);
         }
 
@@ -58,7 +58,7 @@ export class Wire{
     }
 
     public listenDoc(){
-        console.log("Inside listener");
+       
         vscode.workspace.onDidChangeTextDocument((e)=>{
 
             if (this.syncFlag == true && e.contentChanges.length > 0) 
@@ -69,12 +69,12 @@ export class Wire{
                 if(text == ''){
                     //deletion
                     this.payload = {user: this.username, type: -1, range : range, text: text};
-                    console.log('deletion');
+                   
                 }
                 else{
                     //insertion
                     this.payload = {user: this.username, type: 1, range : range, text: text};
-                    console.log('insertion');
+                   
                 }
 
                 //Forwarded to pusher
@@ -86,23 +86,23 @@ export class Wire{
     }
 
     public listenPeer(){
-        console.log("Inside peer");
+       
         // //From Pusher
         this.channel.bind('client-event', (data) => {
             this.syncFlag = false;
             if(data.user != this.username){
-                console.log(data);
+               
                 let _e = new Editor();
                 if(data.type == 1){
                     _e.insert(data.text, data.range).then(x=>{
-                        console.log(x);
+                        
                         this.syncFlag = x;
                     })
                     
                 }
                 else{
                     _e.delete(data.range).then(x=>{
-                        console.log(x);
+                        
                         this.syncFlag = x;
                     })
                 }
