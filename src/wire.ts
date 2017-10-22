@@ -10,6 +10,9 @@ import {Editor} from './editor';
 export class Wire{
     pusher:any;
     channel:any;
+    payload:any;
+    syncFlag:boolean = true;
+
     constructor(){
         // try{
             this.pusher = new Pusher(pusher_config.key,{
@@ -36,12 +39,25 @@ export class Wire{
         console.log("Inside listener");
         vscode.workspace.onDidChangeTextDocument((e)=>{
 
-            let range = e.contentChanges[0].range;
-            let text = e.contentChanges[0].text;
-
-            //Forwarded to pusher
-            this.channel.trigger('client-event', {user: 'suyog', range : e.contentChanges[0].range, text: e.contentChanges[0].text});
-            console.log('triggered');
+            if(this.syncFlag){
+                let range = e.contentChanges[0].range;
+                let text = e.contentChanges[0].text;
+    
+                if(text == ''){
+                    //deletion
+                    this.payload = {user: 'suyog', type: -1, range : range, text: text};
+                    console.log('deletion');
+                }
+                else{
+                    //insertion
+                    this.payload = {user: 'suyog', type: 1, range : range, text: text};
+                    console.log('insertion');
+                }
+    
+                //Forwarded to pusher
+                this.channel.trigger('client-event', this.payload);
+                // console.log(range, "|" + text + '|');
+            }
             
         })
     }
@@ -50,10 +66,13 @@ export class Wire{
         console.log("Inside peer");
         // //From Pusher
         this.channel.bind('client-event', (data) => {
-            if(data.user != 'suyog')
+            this.syncFlag = false;
+            if(data.user != 'suyog'){
                 console.log(data);
                 let _e = new Editor();
                 _e.insert(data.text, data.range);
+            }
+            this.syncFlag = true;
         });
         
     }
