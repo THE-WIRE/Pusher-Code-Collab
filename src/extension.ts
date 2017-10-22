@@ -1,36 +1,38 @@
 'use strict';
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+
 import * as vscode from 'vscode';
-import * as Pusher from 'pusher';
 
-var pusher = new Pusher({
-    appId: '397710',
-    key: 'c658646a189aa1dc804b',
-    secret: '9114afc13ec6eae60a8c',
-    cluster: 'ap2',
-    encrypted: true
-  });
+import { Wire } from './wire';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+
+
 export function activate(context: vscode.ExtensionContext) {
 
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "pusher-code-collab" is now active!');
+    let startDisposable = vscode.commands.registerCommand('extension.startWire', () => {
 
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with  registerCommand
-    // The commandId parameter must match the command field in package.json
-    let disposable = vscode.commands.registerCommand('extension.startWire', () => {
-        // The code you place here will be executed every time your command is executed
+        // let start = new vscode.Position(1, 1);
+        // let end = new vscode.Position(1, 5);
+        // let range = new vscode.Range(start, end);
+        // let content = "hello"
 
-        // Display a message box to the user
-        vscode.window.showInformationMessage('Hello World!');
+        // let _e = new Editor();
+        // _e.insert(content, range);
+        let _wire = new Wire();
+        vscode.window.showInformationMessage("some");
+
+
+        
     });
 
-    context.subscriptions.push(disposable);
+    let joinDisposable = vscode.commands.registerCommand('extension.joinWire', () => {
+        vscode.window.showInputBox({ prompt: "Enter Team Key" })
+        .then(value => {
+            vscode.window.showInformationMessage(value);
+        })
+    });
+
+    context.subscriptions.push(startDisposable);
+    context.subscriptions.push(joinDisposable);
 }
 
 // this method is called when your extension is deactivated

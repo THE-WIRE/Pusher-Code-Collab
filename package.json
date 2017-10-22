@@ -11,7 +11,8 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.startWire"
+        "onCommand:extension.startWire",
+        "onCommand:extension.joinWire"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -19,6 +20,10 @@
             {
                 "command": "extension.startWire",
                 "title": "Start Wire"
+            },
+            {
+                "command": "extension.joinWire",
+                "title": "Join Wire"
             }
         ]
     },
@@ -37,6 +42,8 @@
         "@types/mocha": "^2.2.42"
     },
     "dependencies": {
-        "pusher": "^1.5.1"
+        "pusher": "^1.5.1",
+        "pusher-client": "^1.1.0",
+        "pusher-js": "^4.2.1"
     }
 }
