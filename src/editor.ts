@@ -20,7 +20,9 @@ export class Editor{
             editBuilder.insert(_p, content);
             return true;
             // e.selection = new vscode.Selection(new vscode.Position(e.selection.end.line, e.selection.end.character), new vscode.Position(e.selection.end.line, e.selection.end.character + 1))
-        }).then(x=>{
+        },
+        {undoStopAfter : true ,undoStopBefore : false}
+    ).then(x=>{
             //Task completed
             return true;
         });
