@@ -14,6 +14,7 @@ export class Wire{
     syncFlag:any = true
     token:any
     username:any
+    doc = vscode.window.activeTextEditor.document ;
 
     constructor(name:any, start:boolean = false, join:boolean = false, token:any = ""){
         this.username = name;
@@ -61,7 +62,7 @@ export class Wire{
        
         vscode.workspace.onDidChangeTextDocument((e)=>{
 
-            if (this.syncFlag == true && e.contentChanges.length > 0) 
+            if (e.contentChanges.length > 0) 
             {
                 let range = e.contentChanges[0].range;
                 let text = e.contentChanges[0].text;
@@ -89,22 +90,23 @@ export class Wire{
        
         // //From Pusher
         this.channel.bind('client-event', (data) => {
-            this.syncFlag = false;
+
             if(data.user != this.username){
-               
-                let _e = new Editor();
-                if(data.type == 1){
-                    _e.insert(data.text, data.range).then(x=>{
+
+                if(this.doc.getText(data.range) != data.text)    
+                {   
+                     let _e = new Editor();
+                    if(data.type == 1){
+                        _e.insert(data.text, data.range).then(x=>{
+                            
+                        })
                         
-                        this.syncFlag = x;
-                    })
-                    
-                }
-                else{
-                    _e.delete(data.range).then(x=>{
-                        
-                        this.syncFlag = x;
-                    })
+                    }
+                    else{
+                        _e.delete(data.range).then(x=>{
+                            
+                        })
+                    }
                 }
                     
             }

@@ -18,6 +18,15 @@ export function activate(context: vscode.ExtensionContext) {
         // let _e = new Editor();
         // _e.insert(content, range);
         
+
+        
+        // let _p = new vscode.Position(0, 1);
+        // let _r =  new vscode.Range(new vscode.Position(0, 0),new vscode.Position(0, 2));
+        // // console.log("this is a position",_p);
+        // console.log("this is a range",_r);
+        // console.log(vscode.window.activeTextEditor.document.getText(_r));
+        // //console.log("this is a given character" + str);        
+        
         vscode.window.showInputBox({ prompt: "Enter nickname" })
         .then(value => {
             let _wire = new Wire(value, true);    

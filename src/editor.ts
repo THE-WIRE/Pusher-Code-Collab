@@ -20,18 +20,19 @@ export class Editor{
             editBuilder.insert(_p, content);
             return true;
             // e.selection = new vscode.Selection(new vscode.Position(e.selection.end.line, e.selection.end.character), new vscode.Position(e.selection.end.line, e.selection.end.character + 1))
-        },
-        {undoStopAfter : true ,undoStopBefore : false}
-    ).then(x=>{
+        }).then(x=>{
             //Task completed
             return true;
         });
-
+        
     }
 
     public delete(range):any {
+        
         let e = vscode.window.activeTextEditor;
         let _r = new vscode.Range(new vscode.Position(range[0].line, range[0].character), new vscode.Position(range[1].line, range[1].character))
+
+        
 
         if(!e){
             vscode.window.showErrorMessage("No open file!!");
