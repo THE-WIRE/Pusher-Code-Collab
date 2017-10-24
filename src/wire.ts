@@ -92,7 +92,15 @@ export class Wire{
         this.channel.bind('client-event', (data) => {
 
             if(data.user != this.username){
-                let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line, data.range[1].character+1))
+                let count = 0;
+                let character = data.range[1].character + 1
+                if (data.text == "\n")
+                {
+                    count = 1 ;
+                    character = 0
+                }
+                     
+                let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line + count, character))
                 
 
                 if(this.doc.getText(_r) != data.text)    

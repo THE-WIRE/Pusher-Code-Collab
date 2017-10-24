@@ -18,14 +18,26 @@ export function activate(context: vscode.ExtensionContext) {
         // let _e = new Editor();
         // _e.insert(content, range);
         
-
+        // let str = "a\na"
+        // console.log(str);
         
-        // let _p = new vscode.Position(0, 1);
-        // let _r =  new vscode.Range(new vscode.Position(0, 0),new vscode.Position(0, 2));
-        // // console.log("this is a position",_p);
-        // console.log("this is a range",_r);
-        // console.log(vscode.window.activeTextEditor.document.getText(_r));
-        // //console.log("this is a given character" + str);        
+        // let e = vscode.window.activeTextEditor
+        // let _r =  new vscode.Range(new vscode.Position(0, 6),new vscode.Position(1, 0));
+        // console.log(e.document.getText(_r) == "\n");
+
+
+         
+       
+        // vscode.workspace.onDidChangeTextDocument((e)=>{
+        //     console.log(e);
+        // })
+
+        // e.edit((editBuilder) =>{
+        //     editBuilder.insert(new vscode.Position(1,0), "r");
+        //     return true;
+        //     // e.selection = new vscode.Selection(new vscode.Position(e.selection.end.line, e.selection.end.character), new vscode.Position(e.selection.end.line, e.selection.end.character + 1))
+        // })
+        //console.log("this is a given character" + str);        
         
         vscode.window.showInputBox({ prompt: "Enter nickname" })
         .then(value => {
