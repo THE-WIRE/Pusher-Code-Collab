@@ -16,7 +16,7 @@ export class Wire{
     username:any
     editor:any
 
-    constructor(e:vscode.TextEditor, name:any, start:boolean = false, join:boolean = false, token:any = ""){
+    constructor(e:any, name:any, start:boolean = false, join:boolean = false, token:any = ""){
         this.username = name;
         this.editor = e;
         console.log("inside");
@@ -103,19 +103,27 @@ export class Wire{
             this.syncFlag = false;
             if(data.user != this.username){
                 console.log(data);
-                let _e = new Editor(this.editor);
+
                 if(data.type == 1){
-                    _e.insert(data.text, data.range).then(x=>{
-                        
-                        this.syncFlag = x;
+
+                    let _p = new vscode.Position(data.range[0].line, data.range[0].character);
+                    this.editor.edit((editBuilder) =>{
+                        editBuilder.insert(_p, data.text);
+                    }).then(()=>{
+                        this.syncFlag = true;
                     })
                     
                 }
                 else{
-                    _e.delete(data.range).then(x=>{
-                        
-                        this.syncFlag = x;
+
+                    let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line, data.range[1].character))
+
+                    this.editor.edit((editBuilder) =>{
+                        editBuilder.delete(_r);
+                    }).then(()=>{
+                        this.syncFlag = true;
                     })
+                    
                 }
                     
             }
@@ -125,8 +133,9 @@ export class Wire{
             if(data.user != this.username){
                 console.log(data);
 
-                let _e = new Editor(this.editor);
-                _e.save(data.fileName);
+                this.editor.document.save().then(x=>{
+                    console.log("File saved!");
+                })
             }
         })
         
