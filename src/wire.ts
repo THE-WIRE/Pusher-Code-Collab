@@ -5,7 +5,6 @@ let randomstring = require('randomstring');
 let copy = require('copy-paste');
 var Pusher = require('pusher-client');
 import { pusher_config } from './pusher.conf';
-import {Editor} from './editor';
 
 export class Wire{
     pusher:any;
