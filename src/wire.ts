@@ -14,9 +14,11 @@ export class Wire{
     syncFlag:any = true
     token:any
     username:any
+    editor:any
 
-    constructor(name:any, start:boolean = false, join:boolean = false, token:any = ""){
+    constructor(e:vscode.TextEditor, name:any, start:boolean = false, join:boolean = false, token:any = ""){
         this.username = name;
+        this.editor = e;
         console.log("inside");
         if(start){
             console.log("inside start");
@@ -60,7 +62,7 @@ export class Wire{
     public listenDoc(){
         console.log("Inside listener");
         vscode.workspace.onDidChangeTextDocument((e)=>{
-
+            
             if (this.syncFlag == true && e.contentChanges.length > 0) 
             {
                 let range = e.contentChanges[0].range;
@@ -92,7 +94,7 @@ export class Wire{
             this.syncFlag = false;
             if(data.user != this.username){
                 console.log(data);
-                let _e = new Editor();
+                let _e = new Editor(this.editor);
                 if(data.type == 1){
                     _e.insert(data.text, data.range).then(x=>{
                         console.log(x);

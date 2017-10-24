@@ -3,20 +3,24 @@
 import * as vscode from 'vscode';
 
 export class Editor{
+
+    e:vscode.TextEditor
+
+    constructor(e:vscode.TextEditor){
+        this.e = e;
+    }
     /**
      * insert
      */
     public insert(content, range):any {
-        let e = vscode.window.activeTextEditor;
+        
         // let _r = new vscode.Range(new vscode.Position(range[0].line, range[0].character), new vscode.Position(range[1].line, range[1].character))
         let _p = new vscode.Position(range[0].line, range[0].character);
 
-        if(!e){
-            vscode.window.showErrorMessage("No open file!!");
+        if(this.isAnyFileOpen())    
             return;
-        }
 
-        return e.edit((editBuilder) =>{
+        return this.e.edit((editBuilder) =>{
             editBuilder.insert(_p, content);
             return true;
             // e.selection = new vscode.Selection(new vscode.Position(e.selection.end.line, e.selection.end.character), new vscode.Position(e.selection.end.line, e.selection.end.character + 1))
@@ -28,15 +32,12 @@ export class Editor{
     }
 
     public delete(range):any {
-        let e = vscode.window.activeTextEditor;
         let _r = new vscode.Range(new vscode.Position(range[0].line, range[0].character), new vscode.Position(range[1].line, range[1].character))
 
-        if(!e){
-            vscode.window.showErrorMessage("No open file!!");
+        if(this.isAnyFileOpen())    
             return;
-        }
 
-        return e.edit((editBuilder) =>{
+        return this.e.edit((editBuilder) =>{
             editBuilder.delete(_r);
             return true;
         }).then(x=>{
@@ -44,5 +45,15 @@ export class Editor{
             return true;
         });
 
+    }
+
+    public isAnyFileOpen():boolean{
+        if(!this.e){
+            vscode.window.showErrorMessage("No open file!!");
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 }

@@ -10,17 +10,18 @@ export function activate(context: vscode.ExtensionContext) {
 
     let startDisposable = vscode.commands.registerCommand('extension.startWire', () => {
 
-        // let start = new vscode.Position(1, 1);
-        // let end = new vscode.Position(1, 5);
-        // let range = new vscode.Range(start, end);
-        // let content = "hello"
-
-        // let _e = new Editor();
-        // _e.insert(content, range);
+        let e = vscode.window.activeTextEditor;
+        if(!e){
+            vscode.window.showErrorMessage("No open file!!");
+            return;
+        }
         
-        vscode.window.showInputBox({ prompt: "Enter nickname" })
-        .then(value => {
-            let _wire = new Wire(value, true);    
+        vscode.window.showInputBox({ prompt: "Enter nickname", ignoreFocusOut:true })
+        .then(name => {
+
+            
+            console.log("Still reached!");
+            let _wire = new Wire(e, name, true);    
         })
 
 
@@ -28,11 +29,19 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     let joinDisposable = vscode.commands.registerCommand('extension.joinWire', () => {
-        vscode.window.showInputBox({ prompt: "Enter Team Key" })
+
+        let e = vscode.window.activeTextEditor;
+        if(!e){
+            vscode.window.showErrorMessage("No open file!!");
+            return;
+        }
+
+        vscode.window.showInputBox({ prompt: "Enter Team Key", ignoreFocusOut: true })
         .then(key => {
-            vscode.window.showInputBox({ prompt: "Enter Nickname" })
+            vscode.window.showInputBox({ prompt: "Enter Nickname", ignoreFocusOut: true })
             .then(name => {
-                let _wire = new Wire(name, false, true, key);
+
+                let _wire = new Wire(e, name, false, true, key);
             })    
         })
     });
