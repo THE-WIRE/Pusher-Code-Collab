@@ -47,6 +47,12 @@ export class Editor{
 
     }
 
+    public save(fileName) {
+        //Save file with provded fileName
+        this.save(fileName);
+
+    }
+
     public isAnyFileOpen():boolean{
         if(!this.e){
             vscode.window.showErrorMessage("No open file!!");

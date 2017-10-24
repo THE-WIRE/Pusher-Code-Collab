@@ -85,6 +85,15 @@ export class Wire{
                 
             }
         })
+
+        vscode.workspace.onDidSaveTextDocument((e)=>{
+
+            console.log(e.fileName);
+            let x = e.fileName.split('/');
+            let fileName = x[x.length - 1];
+            this.channel.trigger('client-save', {fileName: fileName, user: this.username});
+
+        })
     }
 
     public listenPeer(){
@@ -111,6 +120,15 @@ export class Wire{
                     
             }
         });
+
+        this.channel.bind('client-save', (data) =>{
+            if(data.user != this.username){
+                console.log(data);
+
+                let _e = new Editor(this.editor);
+                _e.save(data.fileName);
+            }
+        })
         
     }
 }
