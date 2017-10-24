@@ -49,7 +49,9 @@ export class Editor{
 
     public save(fileName) {
         //Save file with provded fileName
-        this.save(fileName);
+        this.e.document.save().then(x=>{
+            console.log("File saved!");
+        })
 
     }
 
