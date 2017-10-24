@@ -41,7 +41,13 @@ export function activate(context: vscode.ExtensionContext) {
         
         vscode.window.showInputBox({ prompt: "Enter nickname" })
         .then(value => {
-            let _wire = new Wire(value, true);    
+            try{
+                let _wire = new Wire(value, true);    
+            }
+            catch(e){
+                console.log(e);
+            }
+            
         })
 
 
@@ -53,7 +59,13 @@ export function activate(context: vscode.ExtensionContext) {
         .then(key => {
             vscode.window.showInputBox({ prompt: "Enter Nickname" })
             .then(name => {
-                let _wire = new Wire(name, false, true, key);
+                try{
+                    let _wire = new Wire(name, false, true, key);
+                }
+                catch(e){
+                    console.log(e);
+                }
+                
             })    
         })
     });
