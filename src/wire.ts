@@ -160,10 +160,8 @@ export class Wire{
 
         this.channel.bind('client-save', (data) =>{
             if(data.user != this.username){
-                console.log(data);
 
                 this.editor.document.save().then(x=>{
-                    console.log("File saved!");
                 })
             }
         })
