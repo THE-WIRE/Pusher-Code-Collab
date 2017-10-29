@@ -70,8 +70,6 @@ export class Wire{
                 let range = e.contentChanges[0].range;
                 let text = e.contentChanges[0].text;
 
-                range[1] = findRange(text, range[0].line, range[0].character)
-
                 if(text == ''){
                     //deletion
                     this.payload = {user: this.username, type: -1, range : range, text: text};
@@ -91,7 +89,7 @@ export class Wire{
 
                 this.buffer.add(event);
                 // this.channel.trigger('client-event', this.payload);
-                console.log(range, "|" + text + '|');
+                // console.log(range, "|" + text + '|');
                 
             }
             else if(e.contentChanges.length > 0){
@@ -116,12 +114,17 @@ export class Wire{
        
         // //From Pusher
         this.channel.bind('client-event', (data) => {
+            let _dr = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line, data.range[1].character))
+            console.log("Initially : ", data.range);
+            data.range[1] = this.findRange(data.text, data.range[0].line, data.range[0].character);
+            console.log("Finally : ", data.range);
+
             // this.syncFlag = false;
             if(data.user != this.username){
                 // console.log(data);
                 // let count = 0;
                 // let character = data.range[1].character + 1
-                let character = data.range[1].character
+                // let character = data.range[1].character
 
                 // if (data.text == "\n")
                 // {
@@ -129,7 +132,7 @@ export class Wire{
                 //     character = 0
                 // }
                      
-                let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line, character))
+                let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line, data.range[1].character))
                 
 
                 if(this.editor.document.getText(_r) != data.text)    
@@ -140,7 +143,7 @@ export class Wire{
                         //let _p = new vscode.Position(data.range[0].line, data.range[0].character);
                         this.editor.edit((editBuilder) =>{
                             editBuilder.replace(_r, data.text);
-                            this.editor.selection = new vscode.Selection(new vscode.Position(this.editor.selection.end.line, this.editor.selection.end.character), new vscode.Position(this.editor.selection.end.line, this.editor.selection.end.character))
+                            this.editor.selection = new vscode.Selection(new vscode.Position(this.editor.selection.end.line, this.editor.selection.end.character), new vscode.Position(this.editor.selection.end.line, this.editor.selection.end.character + 1))
                         }).then(()=>{
                             // this.syncFlag = true;
                         })
@@ -151,7 +154,7 @@ export class Wire{
                         let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line, data.range[1].character))
     
                         this.editor.edit((editBuilder) =>{
-                            editBuilder.delete(_r);
+                            editBuilder.delete(_dr);
                         }).then(()=>{
                             // this.syncFlag = true;
                         })
@@ -173,33 +176,41 @@ export class Wire{
         })
         
     }
-}
 
-function findRange(text, l, c){
-    let line = -1;
-    let col = -1;
-    for(let i = 0; i < text.length; i++){
-        if(text[i] == "\n"){
-            line++;
+    public findRange(text, l, c){
+        if(text.length == 1){
+            return {
+                line : l,
+                character: c
+            }
         }
-    }
-
-    for(let i = text.length - 1; i >= 0; i--){
-        col++;
-        if(text[i] == "\n"){
-            break;
+        console.log("Reached!");
+        let line = 0;
+        let col = 0;
+        for(let i = 0; i < text.length; i++){
+            if(text[i] == "\n"){
+                line+=1;
+            }
         }
-    }
-
-    if(line == l){
-        col += c
-    }
-    else{
-        line += l
-    }
-
-    return {
-        line : line,
-        character: col
+    
+        for(let i = text.length - 1; i >= 0; i--){
+            col+=1;
+            if(text[i] == "\n"){
+                break;
+            }
+        }
+    
+        if(line == l){
+            col += c
+        }
+        else{
+            line += l
+        }
+        console.log(line, col);
+    
+        return {
+            line : line,
+            character: col
+        }
     }
 }
