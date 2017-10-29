@@ -65,7 +65,7 @@ export class Wire{
        
         vscode.workspace.onDidChangeTextDocument((e)=>{
             
-            if (this.syncFlag == true && e.contentChanges.length > 0) 
+            if (e.contentChanges.length > 0) 
             {
                 let range = e.contentChanges[0].range;
                 let text = e.contentChanges[0].text;
@@ -114,7 +114,7 @@ export class Wire{
        
         // //From Pusher
         this.channel.bind('client-event', (data) => {
-            this.syncFlag = false;
+            // this.syncFlag = false;
             if(data.user != this.username){
                 // console.log(data);
                 let count = 0;
@@ -137,7 +137,7 @@ export class Wire{
                         this.editor.edit((editBuilder) =>{
                             editBuilder.insert(_p, data.text);
                         }).then(()=>{
-                            this.syncFlag = true;
+                            // this.syncFlag = true;
                         })
                         
                     }
@@ -148,7 +148,7 @@ export class Wire{
                         this.editor.edit((editBuilder) =>{
                             editBuilder.delete(_r);
                         }).then(()=>{
-                            this.syncFlag = true;
+                            // this.syncFlag = true;
                         })
                         
                     }
