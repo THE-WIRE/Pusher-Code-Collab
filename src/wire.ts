@@ -89,7 +89,7 @@ export class Wire{
 
                 this.buffer.add(event);
                 // this.channel.trigger('client-event', this.payload);
-                // console.log(range, "|" + text + '|');
+                console.log(range, "|" + text + '|');
                 
             }
             else if(e.contentChanges.length > 0){
@@ -117,27 +117,41 @@ export class Wire{
             this.syncFlag = false;
             if(data.user != this.username){
                 // console.log(data);
+                let count = 0;
+                let character = data.range[1].character + 1
 
-                if(data.type == 1){
-
-                    let _p = new vscode.Position(data.range[0].line, data.range[0].character);
-                    this.editor.edit((editBuilder) =>{
-                        editBuilder.insert(_p, data.text);
-                    }).then(()=>{
-                        this.syncFlag = true;
-                    })
-                    
+                if (data.text == "\n")
+                {
+                    count = 1 ;
+                    character = 0
                 }
-                else{
+                     
+                let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line + count, character))
+                
 
-                    let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line, data.range[1].character))
-
-                    this.editor.edit((editBuilder) =>{
-                        editBuilder.delete(_r);
-                    }).then(()=>{
-                        this.syncFlag = true;
-                    })
-                    
+                if(this.editor.document.getText(_r) != data.text)    
+                {   
+                    if(data.type == 1){
+                        
+                        let _p = new vscode.Position(data.range[0].line, data.range[0].character);
+                        this.editor.edit((editBuilder) =>{
+                            editBuilder.insert(_p, data.text);
+                        }).then(()=>{
+                            this.syncFlag = true;
+                        })
+                        
+                    }
+                    else{
+    
+                        let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line, data.range[1].character))
+    
+                        this.editor.edit((editBuilder) =>{
+                            editBuilder.delete(_r);
+                        }).then(()=>{
+                            this.syncFlag = true;
+                        })
+                        
+                    }
                 }
                     
             }
