@@ -70,6 +70,8 @@ export class Wire{
                 let range = e.contentChanges[0].range;
                 let text = e.contentChanges[0].text;
 
+                range[1] = findRange(text, range[0].line, range[0].character)
+
                 if(text == ''){
                     //deletion
                     this.payload = {user: this.username, type: -1, range : range, text: text};
@@ -117,16 +119,17 @@ export class Wire{
             // this.syncFlag = false;
             if(data.user != this.username){
                 // console.log(data);
-                let count = 0;
-                let character = data.range[1].character + 1
+                // let count = 0;
+                // let character = data.range[1].character + 1
+                let character = data.range[1].character
 
-                if (data.text == "\n")
-                {
-                    count = 1 ;
-                    character = 0
-                }
+                // if (data.text == "\n")
+                // {
+                //     count = 1 ;
+                //     character = 0
+                // }
                      
-                let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line + count, character))
+                let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line, character))
                 
 
                 if(this.editor.document.getText(_r) != data.text)    
@@ -169,5 +172,34 @@ export class Wire{
             }
         })
         
+    }
+}
+
+function findRange(text, l, c){
+    let line = -1;
+    let col = -1;
+    for(let i = 0; i < text.length; i++){
+        if(text[i] == "\n"){
+            line++;
+        }
+    }
+
+    for(let i = text.length - 1; i >= 0; i--){
+        col++;
+        if(text[i] == "\n"){
+            break;
+        }
+    }
+
+    if(line == l){
+        col += c
+    }
+    else{
+        line += l
+    }
+
+    return {
+        line : line,
+        character: col
     }
 }
