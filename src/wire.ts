@@ -48,11 +48,11 @@ export class Wire{
                 vscode.window.showInformationMessage("Connected! Start Collaborating...");
                 this.channel.trigger('client-status',  {username : name});
             }
+            this.buffer.assign(this.channel);
         })
 
         this.channel.bind('client-status', (d) =>{
             vscode.window.showInformationMessage(d.username + " connected!");
-            this.buffer.assign(this.channel);
         });
     
         

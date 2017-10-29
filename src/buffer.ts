@@ -1,6 +1,6 @@
 export class Buffer{
 
-    _buffer:Array<any>;
+    _buffer:Array<any> = [];
     _pusher:any;
 
     constructor(pusher:any = null){
