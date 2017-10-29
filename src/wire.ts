@@ -133,9 +133,11 @@ export class Wire{
                 {   
                     if(data.type == 1){
                         
-                        let _p = new vscode.Position(data.range[0].line, data.range[0].character);
+                        let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line, data.range[1].character))
+                        //let _p = new vscode.Position(data.range[0].line, data.range[0].character);
                         this.editor.edit((editBuilder) =>{
-                            editBuilder.insert(_p, data.text);
+                            editBuilder.replace(_r, data.text);
+                            editBuilder.selection = new vscode.Selection(new vscode.Position(editBuilder.selection.end.line, editBuilder.selection.end.character), new vscode.Position(editBuilder.selection.end.line, editBuilder.selection.end.character + 1))
                         }).then(()=>{
                             // this.syncFlag = true;
                         })
