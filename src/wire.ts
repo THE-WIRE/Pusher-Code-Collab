@@ -115,16 +115,13 @@ export class Wire{
         // //From Pusher
         this.channel.bind('client-event', (data) => {
             let _dr = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line, data.range[1].character))
-            console.log("Initially : ", data.range);
             data.range[1] = this.findRange(data.text, data.range[0].line, data.range[0].character);
             console.log("Finally : ", data.range);
 
-            // this.syncFlag = false;
             if(data.user != this.username){
                 // console.log(data);
                 // let count = 0;
                 // let character = data.range[1].character + 1
-                // let character = data.range[1].character
 
                 // if (data.text == "\n")
                 // {
@@ -132,7 +129,7 @@ export class Wire{
                 //     character = 0
                 // }
                      
-                let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line, data.range[1].character))
+                let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line, data.range[1].character + 1))
                 
 
                 if(this.editor.document.getText(_r) != data.text)    
@@ -140,12 +137,10 @@ export class Wire{
                     if(data.type == 1){
                         
                         let _r = new vscode.Range(new vscode.Position(data.range[0].line, data.range[0].character), new vscode.Position(data.range[1].line, data.range[1].character))
-                        //let _p = new vscode.Position(data.range[0].line, data.range[0].character);
+                        
                         this.editor.edit((editBuilder) =>{
                             editBuilder.replace(_r, data.text);
-                            this.editor.selection = new vscode.Selection(new vscode.Position(this.editor.selection.end.line, this.editor.selection.end.character), new vscode.Position(this.editor.selection.end.line, this.editor.selection.end.character + 1))
-                        }).then(()=>{
-                            // this.syncFlag = true;
+                            this.editor.selection = new vscode.Selection(new vscode.Position(this.editor.selection.end.line, this.editor.selection.end.character), new vscode.Position(this.editor.selection.end.line, this.editor.selection.end.character))
                         })
                         
                     }
@@ -155,8 +150,6 @@ export class Wire{
     
                         this.editor.edit((editBuilder) =>{
                             editBuilder.delete(_dr);
-                        }).then(()=>{
-                            // this.syncFlag = true;
                         })
                         
                     }
@@ -178,15 +171,14 @@ export class Wire{
     }
 
     public findRange(text, l, c){
-        if(text.length == 1){
+        if(text.length == 1 && text != "\n"){
             return {
                 line : l,
                 character: c
             }
         }
-        console.log("Reached!");
         let line = 0;
-        let col = 0;
+        let col = -1;
         for(let i = 0; i < text.length; i++){
             if(text[i] == "\n"){
                 line+=1;
@@ -206,7 +198,6 @@ export class Wire{
         else{
             line += l
         }
-        console.log(line, col);
     
         return {
             line : line,
