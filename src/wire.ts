@@ -5,6 +5,7 @@ let randomstring = require('randomstring');
 let copy = require('copy-paste');
 var Pusher = require('pusher-client');
 import { pusher_config } from './pusher.conf';
+import { Buffer } from './buffer';
 
 export class Wire{
     pusher:any;
@@ -14,6 +15,7 @@ export class Wire{
     token:any
     username:any
     editor:any
+    buffer = new Buffer();
 
     constructor(e:any, name:any, start:boolean = false, join:boolean = false, token:any = ""){
         this.username = name;
@@ -50,6 +52,7 @@ export class Wire{
 
         this.channel.bind('client-status', (d) =>{
             vscode.window.showInformationMessage(d.username + " connected!");
+            this.buffer.assign(this.channel);
         });
     
         
@@ -79,9 +82,21 @@ export class Wire{
                 }
 
                 //Forwarded to pusher
-                this.channel.trigger('client-event', this.payload);
+                let event = {
+                    name: 'client-event',
+                    data : this.payload
+                }
+
+                this.buffer.add(event);
+                // this.channel.trigger('client-event', this.payload);
                 // console.log(range, "|" + text + '|');
                 
+            }
+            else if(e.contentChanges.length > 0){
+                console.log("skipped : ", e.contentChanges[0].text);
+            }
+            else{
+                console.log("skipped empty");
             }
         })
 
@@ -101,7 +116,7 @@ export class Wire{
         this.channel.bind('client-event', (data) => {
             this.syncFlag = false;
             if(data.user != this.username){
-                console.log(data);
+                // console.log(data);
 
                 if(data.type == 1){
 
